@@ -42,6 +42,7 @@ A classic **Tetris game** built using **Java and OOP** principles. It features *
 
 
 ## 🤝 Contributors
-- **Developer:** A1bert  
+- **Developer:**
+- ITITDK23008_ Nguyễn Quang Minh 
 
 🚀 Enjoy playing! Feel free to contribute! 🎮
