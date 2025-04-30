@@ -68,7 +68,7 @@ public abstract class Mino {
         // check frame collison
         // left wall
         for (int i = 0; i < b.length; i++) {
-            if (b[i].x == Playmanager.left_X) {
+            if (b[i].x == PlayManager.left_X) {
                 leftCollision = true;
             }
 
@@ -76,13 +76,13 @@ public abstract class Mino {
 
         // right wall
         for (int i = 0; i < b.length; i++) {
-            if (b[i].x + Block.Size == Playmanager.right_x) {
+            if (b[i].x + Block.Size == PlayManager.right_X) {
                 rightCollision = true;
             }
 
         }
         for (int i = 0; i < b.length; i++) {
-            if (b[i].y + Block.Size == Playmanager.bottom_y) {
+            if (b[i].y + Block.Size == PlayManager.bottom_Y) {
                 bottomCollision = true;
             }
         }
@@ -92,7 +92,7 @@ public abstract class Mino {
     public void checkRotationCollision() {
         // left wall
         for (int i = 0; i < b.length; i++) {
-            if (tempB[i].x < Playmanager.left_X) {
+            if (tempB[i].x < PlayManager.left_X) {
                 leftCollision = true;
             }
 
@@ -100,13 +100,13 @@ public abstract class Mino {
 
         // right wall
         for (int i = 0; i < b.length; i++) {
-            if (tempB[i].x + Block.Size > Playmanager.right_x) {
+            if (tempB[i].x + Block.Size > PlayManager.right_X) {
                 rightCollision = true;
             }
 
         }
         for (int i = 0; i < b.length; i++) {
-            if (tempB[i].y + Block.Size > Playmanager.bottom_y) {
+            if (tempB[i].y + Block.Size > PlayManager.bottom_Y) {
                 bottomCollision = true;
             }
         }
@@ -115,9 +115,9 @@ public abstract class Mino {
 
     private void checkStaticcollision() {
 
-        for (int i = 0; i < Playmanager.staticBlocks.size(); i++) {
-            int targetX = Playmanager.staticBlocks.get(i).x;
-            int targetY = Playmanager.staticBlocks.get(i).y;
+        for (int i = 0; i < PlayManager.staticBlocks.size(); i++) {
+            int targetX = PlayManager.staticBlocks.get(i).x;
+            int targetY = PlayManager.staticBlocks.get(i).y;
 
             // check down
             for (int ii = 0; ii < b.length; ii++) {
@@ -212,7 +212,7 @@ public abstract class Mino {
             deactivating = true;
         } else {
             autoDropCouter++;
-            if (autoDropCouter == Playmanager.dropInterval) {
+            if (autoDropCouter == PlayManager.dropInterval) {
                 // the mino goes down
                 b[0].y += Block.Size;
                 b[1].y += Block.Size;
