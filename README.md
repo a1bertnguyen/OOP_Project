@@ -1,9 +1,9 @@
-# Tetris Game - Java OOP
+# Tetris Game - Java OOP Final Project @HCMIU
 
 ## 🎮 Overview
 A classic **Tetris game** built using **Java and OOP** principles. It features **Tetromino movement, line clearing, scoring, and sound effects**.
 
-## 🚀 Features
+## 🔎 Features
 ✅ Move, Rotate, and Drop Tetrominoes  
 ✅ Auto Drop & Collision Handling  
 ✅ Line Clearing & Scoring System  
@@ -43,6 +43,7 @@ A classic **Tetris game** built using **Java and OOP** principles. It features *
 
 ## 🤝 Contributors
 - **Developer:**
-- ITITDK23008_ Nguyễn Quang Minh 
+- ITITDK23008_ Nguyễn Quang Minh
+- ITITWE23040_ Nguyễn Lê Mai Hương
 
-🚀 Enjoy playing! Feel free to contribute! 🎮
+Enjoy playing! 🎮
