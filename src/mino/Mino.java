@@ -3,44 +3,40 @@ package mino;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import Tetris.GamePanel;
-import Tetris.KeyHandler;
-import Tetris.Playmanager;
-
 public abstract class Mino {
     public Block b[] = new Block[4];
     public Block tempB[] = new Block[4];
     public int autoDropCouter = 0;
     public int direction = 1; // there are 4 direction (1/2/3/4)
-    public boolean leftCollision, rightCollision, bottomCollision;
+    public boolean leftCollision, rightCollision, bottomCollision; // kiểm soát logic chuyển dộng xoay
     public boolean active = true;
     public boolean deactivating;
     public int deactivateCounter = 0;
 
     public void create(Color c) {
-        b[0] = new Block(c);
-        b[1] = new Block(c);
-        b[2] = new Block(c);
-        b[3] = new Block(c);
-        tempB[0] = new Block(c);
-        tempB[1] = new Block(c);
-        tempB[2] = new Block(c);
-        tempB[3] = new Block(c);
+        b[0] = new Block(c);//
+        b[1] = new Block(c);//
+        b[2] = new Block(c);//khởi tạo 4 block chính
+        b[3] = new Block(c);//
+        tempB[0] = new Block(c);//
+        tempB[1] = new Block(c);// 4 block tạm nhưng do trùng vị trí
+        tempB[2] = new Block(c);//
+        tempB[3] = new Block(c);//
     }
 
     public void setXY(int x, int y) {
 
     }
 
-    public void updateXY(int direction) {
-        checkRotationCollision();
+    public void updateXY(int direction) { // kiểm tra va chạm, neeusko va chạm thì cập nhận tu tempb sang b
+        checkRotationCollision();// kiểm tra va chạm từ tường với block khác
         if (leftCollision == false && rightCollision == false && bottomCollision == false) {
             this.direction = direction;
             b[0].x = tempB[0].x;
             b[0].y = tempB[0].y;
             b[1].x = tempB[1].x;
             b[1].y = tempB[1].y;
-            b[2].x = tempB[2].x;
+            b[2].x = tempB[2].x ;
             b[2].y = tempB[2].y;
             b[3].x = tempB[3].x;
             b[3].y = tempB[3].y;
@@ -68,7 +64,7 @@ public abstract class Mino {
         // check frame collison
         // left wall
         for (int i = 0; i < b.length; i++) {
-            if (b[i].x == Playmanager.left_X) {
+            if (b[i].x == PlayManager.left_X) {
                 leftCollision = true;
             }
 
@@ -76,13 +72,13 @@ public abstract class Mino {
 
         // right wall
         for (int i = 0; i < b.length; i++) {
-            if (b[i].x + Block.Size == Playmanager.right_x) {
+            if (b[i].x + Block.Size == PlayManager.right_X) {
                 rightCollision = true;
             }
 
         }
         for (int i = 0; i < b.length; i++) {
-            if (b[i].y + Block.Size == Playmanager.bottom_y) {
+            if (b[i].y + Block.Size == PlayManager.bottom_Y) {
                 bottomCollision = true;
             }
         }
@@ -92,7 +88,7 @@ public abstract class Mino {
     public void checkRotationCollision() {
         // left wall
         for (int i = 0; i < b.length; i++) {
-            if (tempB[i].x < Playmanager.left_X) {
+            if (tempB[i].x < PlayManager.left_X) {
                 leftCollision = true;
             }
 
@@ -100,13 +96,13 @@ public abstract class Mino {
 
         // right wall
         for (int i = 0; i < b.length; i++) {
-            if (tempB[i].x + Block.Size > Playmanager.right_x) {
+            if (tempB[i].x + Block.Size > PlayManager.right_X) {
                 rightCollision = true;
             }
 
         }
         for (int i = 0; i < b.length; i++) {
-            if (tempB[i].y + Block.Size > Playmanager.bottom_y) {
+            if (tempB[i].y + Block.Size > PlayManager.bottom_Y) {
                 bottomCollision = true;
             }
         }
@@ -115,9 +111,9 @@ public abstract class Mino {
 
     private void checkStaticcollision() {
 
-        for (int i = 0; i < Playmanager.staticBlocks.size(); i++) {
-            int targetX = Playmanager.staticBlocks.get(i).x;
-            int targetY = Playmanager.staticBlocks.get(i).y;
+        for (int i = 0; i < PlayManager.staticBlocks.size(); i++) {
+            int targetX = PlayManager.staticBlocks.get(i).x;
+            int targetY = PlayManager.staticBlocks.get(i).y;
 
             // check down
             for (int ii = 0; ii < b.length; ii++) {
@@ -165,7 +161,7 @@ public abstract class Mino {
                     break;
             }
             KeyHandler.upPressed = false;
-            GamePanel.se.play(3, false);
+            GamePanel.soundEffect.play(3, false);
 
         }
         checkMovementCollision();
@@ -207,12 +203,12 @@ public abstract class Mino {
         }
         if (bottomCollision) {
             if (deactivating == false) {
-                GamePanel.se.play(4, false);
+                //GamePanel.soundEffect.play(4, false); NGOC
             }
             deactivating = true;
         } else {
             autoDropCouter++;
-            if (autoDropCouter == Playmanager.dropInterval) {
+            if (autoDropCouter == PlayManager.dropInterval) {
                 // the mino goes down
                 b[0].y += Block.Size;
                 b[1].y += Block.Size;
@@ -249,4 +245,6 @@ public abstract class Mino {
         g2.fillRect(b[3].x + margin, b[3].y + margin, Block.Size - (margin * 2), Block.Size - (margin * 2));
     }
 
+    public void addBlocksToStatic() {
+    }
 }

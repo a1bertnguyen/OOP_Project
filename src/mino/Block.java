@@ -14,12 +14,12 @@ public class Block extends Rectangle {
 
     }
     public void draw(Graphics2D g2){
-        int margine =2;
+        int margin =2;
 
         g2.setColor(c);
-        g2.fillRect(x+margine, y+margine, Size-(margine*2), Size-(margine*2));
+        g2.fillRect(x+margin, y+margin, Size-(margin*2), Size-(margin*2));
     }
 
 
-    
+
 }

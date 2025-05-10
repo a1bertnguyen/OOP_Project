@@ -7,7 +7,8 @@ public class Mino_Bar extends Mino {
         create(Color.cyan);
     }
 
-    public void setXY(int x, int y) {
+    @Override
+    public void setXY(int x, int y) { //xác định tọa độ ban đầu của các block.
         //
         // *  *  *  *
         //
@@ -21,7 +22,7 @@ public class Mino_Bar extends Mino {
         b[3].y = b[0].y;
     }
 
-    public void getDirection1() {
+    public void getDirection1() { // xác định trạng thái xoay thứ X (1–4).
         //
         // *  *  *  *
         //
@@ -34,7 +35,7 @@ public class Mino_Bar extends Mino {
         tempB[3].x = b[0].x + Block.Size*2;
         tempB[3].y = b[0].y;
 
-        updateXY(1);
+        updateXY(1); //cập nhật trạng thái mới sau khi xoay.
     }
     public void getDirection2() {
         // *
