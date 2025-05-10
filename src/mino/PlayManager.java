@@ -3,6 +3,7 @@ package mino;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class PlayManager extends JPanel {
@@ -15,17 +16,17 @@ public class PlayManager extends JPanel {
     //Mino
     Mino currentMino; //Mino đang rơi
     Mino nextMino;  //Mino kế tiếp sẽ rơi
-    final int MINO_START_X, MINO_START_Y;
-    final int NEXTMINO_X, NEXTMINO_Y;
+    int MINO_START_X = 0 , MINO_START_Y = 0;
+    int NEXTMINO_X = 0 , NEXTMINO_Y = 0;
 
     //Các block đã rơi cố định
     public static ArrayList<Block> staticBlocks = new ArrayList<>();
 
-    public static int dropInterval = 60;
+    public static int dropInterval = 120; //PNHU: chỉnh từ 60 -> 120 để giam tốc độ rơi cho phù hợp
     boolean Gameover;
 
     //Xóa dòng
-    boolean effectCounterOn; //Check xem có đang bật hiệu ứng xóa dòng không?
+    boolean effectCounterOn = false; //Check xem có đang bật hiệu ứng xóa dòng không? NGOC (khởi tạo = false)
     int effectCounter;
     public ArrayList<Integer> effectY = new ArrayList<>(); //Lưu tọa độ của các dòng cần xóa
 
@@ -37,7 +38,9 @@ public class PlayManager extends JPanel {
     //Tham chiếu đến GamePanel
     GamePanel gp;
 
-    public PlayManager () {
+    public PlayManager(GamePanel gp) {
+        this.gp = gp;
+
         //Biên khung chơi
         left_X = (gp.getWidth() / 2) - (WIDTH / 2);
         right_X = left_X + WIDTH;
@@ -48,9 +51,9 @@ public class PlayManager extends JPanel {
         MINO_START_X = left_X + (WIDTH / 2) - Block.Size;
         MINO_START_Y = top_Y + Block.Size;
 
-        //Tọa độ hiển thị nextMino
-        NEXTMINO_X = right_X + 175;
-        NEXTMINO_Y = left_X + 125;
+        //Tọa độ hiển thị nextMino NGOC
+        NEXTMINO_X = right_X + 100 + 70 ;
+        NEXTMINO_Y = bottom_Y - 200 + 60 + 40;//left_X + 100; cái cũ tọa độ bị lệch ra ngoài
 
         currentMino = pickMino();
         currentMino.setXY(MINO_START_X, MINO_START_Y);
@@ -59,30 +62,39 @@ public class PlayManager extends JPanel {
         nextMino.setXY(NEXTMINO_X, NEXTMINO_Y);
     }
 
+    public PlayManager() {
+    }
+
     private Mino pickMino() { //random 1 loại Mino bất kỳ
         int random = (int)(Math.random() * 7); //random 0 -> 6 (7 giá trị)
         return switch (random) {
-            case 0 -> new Mino_Bar(this);
-            case 1 -> new Mino_L1(this);
-            case 2 -> new Mino_L2(this);
-            case 3 -> new Mino_Square(this);
-            case 4 -> new Mino_T(this);
-            case 5 -> new Mino_Z1(this);
-            case 6 -> new Mino_Z2(this);
-            default -> new Mino_Bar(this);
+            case 1 -> new Mino_L1();
+            case 2 -> new Mino_L2();
+            case 3 -> new Mino_Square();
+            case 4 -> new Mino_T();
+            case 5 -> new Mino_Z1();
+            case 6 -> new Mino_Z2();
+            default -> new Mino_Bar();
         };
     }
 
     public void update() {
+        //Nếu game đang tạm dừng thì không cho Mino rơi
         if (effectCounterOn) return; //tạm dừng game, không cho mảnh rơi tiếp nếu chưa xóa dòng xong
         if (!currentMino.active) {
             // Mino đã rớt xong
-            currentMino.addBlocksToStatic();
+            //currentMino.addBlocksToStatic();
+            // NGOC Add the blocks of the current Mino to the static blocks
+            // cục nào rớt r lưu vào static block
+            staticBlocks.addAll(Arrays.asList(currentMino.b));
 
             // Kiểm tra Game Over
-            if (currentMino.top_Y <= top_Y) {
-                Gameover = true;
-                return;
+            // Sau khi addBlocksToStatic()
+            for (Block block : currentMino.b) {
+                if (block.y < top_Y + Block.Size * 2) { // Điều chỉnh nếu cần
+                    Gameover = true;
+                    return;
+                }
             }
 
             // Gán mino mới
@@ -140,6 +152,7 @@ public class PlayManager extends JPanel {
                 remainingBlocks.add(block);
             }
         }
+        GamePanel.soundEffect.play(3, false);
 
         //Dịch block phía trên xuống
         Collections.sort(rowsToDelete);
@@ -164,15 +177,12 @@ public class PlayManager extends JPanel {
             level++;
             dropInterval = Math.max(1, (int)(dropInterval * 0.9));
         }
-
     }
 
-    public void draw(Graphics g2) {
-        //
+    public void draw(Graphics2D g2) {
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(4f));
         g2.drawRect(left_X - 4, top_Y - 4, WIDTH + 8, HEIGHT + 8);
-
 
         // Draw next Mino Frame
         int x = right_X + 100;
@@ -182,41 +192,32 @@ public class PlayManager extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.drawString("Next", x + 60, y + 60);
 
-
         // Draw the currentMino
         if (currentMino != null) {
-            currentMino.draw((Graphics2D) g2);
-
-
+            currentMino.draw(g2);
         }
-        // Draw the next Mino
-        nextMino.draw((Graphics2D) g2);
 
+        // Draw the next Mino
+        nextMino.draw(g2);
 
         // Draw the static block
-        for (int i = 0; i < staticBlocks.size(); i++) {
-            staticBlocks.get(i).draw((Graphics2D) g2);
+        for (Block staticBlock : staticBlocks) {
+            staticBlock.draw(g2);
         }
+
         // draw effect
         if (effectCounterOn) {
             effectCounter++;
-
-
             g2.setColor(Color.red);
-            for (int i = 0; i < effectY.size(); i++) {
-                g2.fillRect(left_X, effectY.get(i), WIDTH, Block.Size);
-
-
+            for (Integer integer : effectY) {
+                g2.fillRect(left_X, integer, WIDTH, Block.Size);
             }
             if (effectCounter == 10) {
                 effectCounterOn = false;
                 effectCounter = 0;
                 effectY.clear();
-
-
             }
         }
-
 
         // draw pause and game over
         g2.setColor(Color.yellow);
@@ -226,7 +227,6 @@ public class PlayManager extends JPanel {
             g2.setFont(new Font("Arial", Font.BOLD, 50));
             g2.drawString("GAME OVER", left_X + 50, top_Y + 300);
         }
-
 
         if (KeyHandler.pausedPressed && !Gameover) {
             g2.setColor(Color.yellow);
@@ -240,14 +240,11 @@ public class PlayManager extends JPanel {
         g2.drawString("LINES: " + line, scoreX + 20, top_Y + 90);
         g2.drawString("SCORE: " + score, scoreX + 20, top_Y + 130);
 
-
         // draw game title
         x = 35;
         y = top_Y + 320;
         g2.setColor(Color.white);
-        g2.setFont(new Font("Times New Roman", Font.ITALIC, 60));
-
-
+        g2.setFont(new Font("Times New Roman", Font.ITALIC, 50));
         g2.drawString("Simple Tetris", x, y);
 
     }

@@ -4,13 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GamePanel extends JPanel implements Runnable{
-    public final static int width = 600;
-    public final static int height = 600;
+    public final static int width = 1010; //NGOC old: 600, cái cũ quá nhỏ
+    public final static int height = 750; //NGOC 600
     public int FPS = 60;
     public Thread gameThread;
     public PlayManager pm;
-    // public static music = new sound();
-    // public static soundEffect = new sound();
+    public static Sound soundEffect;
+    //PNHU: xóa bớt 2 dòng note cũ do hai dòng đó tạo attribute nma kh cần tới nữa
 
     public GamePanel () {
         JFrame frame = new JFrame("Tetris");
@@ -21,9 +21,17 @@ public class GamePanel extends JPanel implements Runnable{
         frame.setLocationRelativeTo(null); //Center
         frame.setVisible(true);
 
-        setBackground(Color.black);
+        setBackground(Color.BLACK); // Set the background color
+        // Initialize PlayManager
+        pm = new PlayManager(this); // Pass the current GamePanel instance to PlayManager
 
-        pm = new PlayManager(); // GamePanel được tạo thì sẽ tạo ra 1 PlayManager
+        //PNHU: add KeyHandler
+        addKeyListener(new KeyHandler());
+        setFocusable(true); // để panel nhận focus và nhận sự kiện phím
+        requestFocusInWindow(); // đảm bảo nó có focus ngay khi khởi chạy
+
+        //PNHU: add soundEffect
+        soundEffect = new Sound();
     }
 
     public void launchGame() {
@@ -33,7 +41,7 @@ public class GamePanel extends JPanel implements Runnable{
 
     @Override
     public void run() {
-        double drawInterval = 10000000000.0 / FPS; //Khỏang thời gian giữa 2 lần update
+        double drawInterval = 100000000.0 / FPS; //NGOC Khỏang thời gian giữa 2 lần update (giảm tgian lại để chạy nhanh hơn 1 chút)
         double delta = 0; // đếm thời gian đã trôi qua và khi nào nên update game 1 lần
         long lastTime = System.nanoTime(); // lưu thời gian băt đầu vòng lặp
         long currentTime;
@@ -56,8 +64,9 @@ public class GamePanel extends JPanel implements Runnable{
     }
 
     @Override
-    protected void paintComponent (Graphics g) {
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         pm.draw((Graphics2D) g);
+
     } /* Vẽ giao diện game */
 }
