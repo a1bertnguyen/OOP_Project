@@ -1,16 +1,15 @@
 package Tetris;
 
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
 
-    public boolean upPressed;
-    public boolean downPressed;
-    public boolean leftPressed;
-    public boolean rightPressed;
-    public boolean pausedPressed;
+    public static boolean upPressed;
+    public static boolean downPressed;
+    public static boolean leftPressed;
+    public static boolean rightPressed;
+    public static boolean pausedPressed;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -34,7 +33,12 @@ public class KeyHandler implements KeyListener {
             rightPressed = true;
         }
         if (code == KeyEvent.VK_P) {
-            pausedPressed = !pausedPressed;
+            if (pausedPressed) {
+                pausedPressed = false;
+
+            } else {
+                pausedPressed = true;
+            }
         }
     }
 

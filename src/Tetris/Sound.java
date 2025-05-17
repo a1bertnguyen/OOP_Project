@@ -5,8 +5,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class Sound {
-
-    private Clip music_clip;
+    public Clip music_clip;
 
     public Sound() {
     }
