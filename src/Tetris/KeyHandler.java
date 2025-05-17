@@ -1,4 +1,5 @@
-package keyhandler;
+package Tetris;
+
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;

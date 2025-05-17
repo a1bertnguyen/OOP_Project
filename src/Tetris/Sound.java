@@ -1,4 +1,4 @@
-package sound;
+package Tetris;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -12,8 +12,10 @@ public class Sound {
     }
 
     /**
-     * Phát âm thanh từ file tương ứng với chỉ số `i` (mở rộng nếu cần nhiều âm thanh)
-     * @param i - chỉ số âm thanh (hiện tại chỉ có 1 file)
+     * Phát âm thanh từ file tương ứng với chỉ số `i` (mở rộng nếu cần nhiều âm
+     * thanh)
+     * 
+     * @param i     - chỉ số âm thanh (hiện tại chỉ có 1 file)
      * @param music - true nếu muốn phát lặp lại
      */
     public void play(int i, boolean music) {
