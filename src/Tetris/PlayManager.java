@@ -1,4 +1,27 @@
-package mino;
+package Tetris;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.lang.module.FindException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.logging.Level;
+
+import mino.Block;
+import mino.Mino;
+import mino.Mino_Bar;
+import mino.Mino_L1;
+import mino.Mino_L2;
+import mino.Mino_Square;
+import mino.Mino_T;
+import mino.Mino_Z1;
+import mino.Mino_Z2;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,53 +30,53 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class PlayManager extends JPanel {
-    //Kích thước khung chơi
+    // Kích thước khung chơi
     final int WIDTH = 360;
     final int HEIGHT = 600;
 
     public static int left_X, right_X, top_Y, bottom_Y;
 
-    //Mino
-    Mino currentMino; //Mino đang rơi
-    Mino nextMino;  //Mino kế tiếp sẽ rơi
-    int MINO_START_X = 0 , MINO_START_Y = 0;
-    int NEXTMINO_X = 0 , NEXTMINO_Y = 0;
+    // Mino
+    Mino currentMino; // Mino đang rơi
+    Mino nextMino; // Mino kế tiếp sẽ rơi
+    int MINO_START_X = 0, MINO_START_Y = 0;
+    int NEXTMINO_X = 0, NEXTMINO_Y = 0;
 
-    //Các block đã rơi cố định
+    // Các block đã rơi cố định
     public static ArrayList<Block> staticBlocks = new ArrayList<>();
 
-    public static int dropInterval = 120; //PNHU: chỉnh từ 60 -> 120 để giam tốc độ rơi cho phù hợp
+    public static int dropInterval = 120; // PNHU: chỉnh từ 60 -> 120 để giam tốc độ rơi cho phù hợp
     boolean Gameover;
 
-    //Xóa dòng
-    boolean effectCounterOn = false; //Check xem có đang bật hiệu ứng xóa dòng không? NGOC (khởi tạo = false)
+    // Xóa dòng
+    boolean effectCounterOn = false; // Check xem có đang bật hiệu ứng xóa dòng không? NGOC (khởi tạo = false)
     int effectCounter;
-    public ArrayList<Integer> effectY = new ArrayList<>(); //Lưu tọa độ của các dòng cần xóa
+    public ArrayList<Integer> effectY = new ArrayList<>(); // Lưu tọa độ của các dòng cần xóa
 
-    //Điểm số
+    // Điểm số
     int level = 1;
     int line;
     int score;
 
-    //Tham chiếu đến GamePanel
+    // Tham chiếu đến GamePanel
     GamePanel gp;
 
     public PlayManager(GamePanel gp) {
         this.gp = gp;
 
-        //Biên khung chơi
+        // Biên khung chơi
         left_X = (gp.getWidth() / 2) - (WIDTH / 2);
         right_X = left_X + WIDTH;
         top_Y = 50;
         bottom_Y = top_Y + HEIGHT;
 
-        //Tọa độ xuất hiện Mino
+        // Tọa độ xuất hiện Mino
         MINO_START_X = left_X + (WIDTH / 2) - Block.Size;
         MINO_START_Y = top_Y + Block.Size;
 
-        //Tọa độ hiển thị nextMino NGOC
-        NEXTMINO_X = right_X + 100 + 70 ;
-        NEXTMINO_Y = bottom_Y - 200 + 60 + 40;//left_X + 100; cái cũ tọa độ bị lệch ra ngoài
+        // Tọa độ hiển thị nextMino NGOC
+        NEXTMINO_X = right_X + 100 + 70;
+        NEXTMINO_Y = bottom_Y - 200 + 60 + 40;// left_X + 100; cái cũ tọa độ bị lệch ra ngoài
 
         currentMino = pickMino();
         currentMino.setXY(MINO_START_X, MINO_START_Y);
@@ -65,8 +88,8 @@ public class PlayManager extends JPanel {
     public PlayManager() {
     }
 
-    private Mino pickMino() { //random 1 loại Mino bất kỳ
-        int random = (int)(Math.random() * 7); //random 0 -> 6 (7 giá trị)
+    private Mino pickMino() { // random 1 loại Mino bất kỳ
+        int random = (int) (Math.random() * 7); // random 0 -> 6 (7 giá trị)
         return switch (random) {
             case 1 -> new Mino_L1();
             case 2 -> new Mino_L2();
@@ -79,11 +102,12 @@ public class PlayManager extends JPanel {
     }
 
     public void update() {
-        //Nếu game đang tạm dừng thì không cho Mino rơi
-        if (effectCounterOn) return; //tạm dừng game, không cho mảnh rơi tiếp nếu chưa xóa dòng xong
+        // Nếu game đang tạm dừng thì không cho Mino rơi
+        if (effectCounterOn)
+            return; // tạm dừng game, không cho mảnh rơi tiếp nếu chưa xóa dòng xong
         if (!currentMino.active) {
             // Mino đã rớt xong
-            //currentMino.addBlocksToStatic();
+            // currentMino.addBlocksToStatic();
             // NGOC Add the blocks of the current Mino to the static blocks
             // cục nào rớt r lưu vào static block
             staticBlocks.addAll(Arrays.asList(currentMino.b));
@@ -118,7 +142,7 @@ public class PlayManager extends JPanel {
         final int NUMBER_OF_COLUMNS = WIDTH / Block.Size;
         final int NUMBER_OF_ROWS = HEIGHT / Block.Size;
 
-        //Đếm số block mỗi dòng
+        // Đếm số block mỗi dòng
         int[] count = new int[NUMBER_OF_ROWS];
 
         for (Block block : staticBlocks) {
@@ -130,7 +154,7 @@ public class PlayManager extends JPanel {
 
         ArrayList<Integer> rowsToDelete = new ArrayList<>();
 
-        //Xác định dòng nào đầy
+        // Xác định dòng nào đầy
         for (int i = 0; i < NUMBER_OF_ROWS; i++) {
             if (count[i] == NUMBER_OF_COLUMNS) {
                 rowsToDelete.add(top_Y + i * Block.Size);
@@ -141,11 +165,11 @@ public class PlayManager extends JPanel {
             return;
         }
 
-        //Bật hiệu ứng
+        // Bật hiệu ứng
         effectCounterOn = true;
         effectY.addAll(rowsToDelete);
 
-        //Xóa block ở dòng đầy
+        // Xóa block ở dòng đầy
         ArrayList<Block> remainingBlocks = new ArrayList<>();
         for (Block block : staticBlocks) {
             if (!rowsToDelete.contains(block.y)) {
@@ -154,7 +178,7 @@ public class PlayManager extends JPanel {
         }
         GamePanel.soundEffect.play(3, false);
 
-        //Dịch block phía trên xuống
+        // Dịch block phía trên xuống
         Collections.sort(rowsToDelete);
         for (int deletedRow : rowsToDelete) {
             for (Block block : remainingBlocks) {
@@ -164,18 +188,18 @@ public class PlayManager extends JPanel {
             }
         }
 
-        //Cập nhật staticBlocks
+        // Cập nhật staticBlocks
         staticBlocks.clear();
         staticBlocks.addAll(remainingBlocks);
 
-        //Tính điểm
+        // Tính điểm
         int numberOfClearedLines = rowsToDelete.size();
         line += numberOfClearedLines;
         score += numberOfClearedLines * 100;
 
         if (line % 10 == 0) {
             level++;
-            dropInterval = Math.max(1, (int)(dropInterval * 0.9));
+            dropInterval = Math.max(1, (int) (dropInterval * 0.9));
         }
     }
 

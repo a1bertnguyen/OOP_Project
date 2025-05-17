@@ -1,4 +1,4 @@
-package mino;
+package Tetris;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -33,7 +33,12 @@ public class KeyHandler implements KeyListener {
             rightPressed = true;
         }
         if (code == KeyEvent.VK_P) {
-            pausedPressed = !pausedPressed;
+            if (pausedPressed) {
+                pausedPressed = false;
+
+            } else {
+                pausedPressed = true;
+            }
         }
     }
 
@@ -55,4 +60,3 @@ public class KeyHandler implements KeyListener {
         }
     }
 }
-

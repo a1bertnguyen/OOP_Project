@@ -3,6 +3,13 @@ package mino;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import Tetris.KeyHandler;
+import Tetris.PlayManager;
+import Tetris.Sound;
+import Tetris.GamePanel;
+import Tetris.KeyHandler;
+import Tetris.PlayManager;
+
 public abstract class Mino {
     public Block b[] = new Block[4];
     public Block tempB[] = new Block[4];
@@ -16,7 +23,7 @@ public abstract class Mino {
     public void create(Color c) {
         b[0] = new Block(c);//
         b[1] = new Block(c);//
-        b[2] = new Block(c);//khởi tạo 4 block chính
+        b[2] = new Block(c);// khởi tạo 4 block chính
         b[3] = new Block(c);//
         tempB[0] = new Block(c);//
         tempB[1] = new Block(c);// 4 block tạm nhưng do trùng vị trí
@@ -36,7 +43,7 @@ public abstract class Mino {
             b[0].y = tempB[0].y;
             b[1].x = tempB[1].x;
             b[1].y = tempB[1].y;
-            b[2].x = tempB[2].x ;
+            b[2].x = tempB[2].x;
             b[2].y = tempB[2].y;
             b[3].x = tempB[3].x;
             b[3].y = tempB[3].y;
@@ -73,7 +80,7 @@ public abstract class Mino {
                 bottomCollision = true;
             }
         }
-        //PNHU: giảm lặp
+        // PNHU: giảm lặp
     }
 
     public void checkRotationCollision() {
@@ -87,7 +94,7 @@ public abstract class Mino {
             if (tempB[i].y + Block.Size > PlayManager.bottom_Y) {
                 bottomCollision = true;
             }
-        } //PNHU: giảm lặp
+        } // PNHU: giảm lặp
     }
 
     private void checkStaticCollision() {
@@ -106,7 +113,7 @@ public abstract class Mino {
                 if (b[ii].x + Block.Size == targetX && b[ii].y == targetY) {
                     rightCollision = true;
                 }
-            } //PNHU: giảm lặp
+            } // PNHU: giảm lặp
         }
     }
 
@@ -168,7 +175,7 @@ public abstract class Mino {
         }
         if (bottomCollision) {
             if (!deactivating) {
-                //GamePanel.soundEffect.play(4, false); NGOC
+                // GamePanel.soundEffect.play(4, false); NGOC
             }
             deactivating = true;
         } else {
