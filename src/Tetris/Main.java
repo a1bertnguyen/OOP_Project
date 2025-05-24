@@ -2,7 +2,15 @@ package Tetris;
 
 public class Main {
     public static void main(String[] args) {
-        GamePanel gp = new GamePanel(); // NGOC đã tạo java swing rồi nên tối giản lại ko cần
-        gp.launchGame(); // tạo nữa bị double khung hiện ra
+        // Set look and feel to system default for better appearance
+        try {
+            javax.swing.UIManager.setLookAndFeel(
+                    javax.swing.UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Create and show the game frame with menu
+        new GameFrame();
     }
 }

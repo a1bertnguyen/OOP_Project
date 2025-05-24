@@ -11,33 +11,62 @@ public class GamePanel extends JPanel implements Runnable {
     public Thread gameThread;
     public PlayManager pm;
     public static Sound soundEffect;
+    private GameFrame gameFrame;
+    private boolean gameStarted = false;
     // PNHU: xóa bớt 2 dòng note cũ do hai dòng đó tạo attribute nma kh cần tới nữa
 
-    public GamePanel() {
-        JFrame frame = new JFrame("Tetris");
-        frame.setSize(width, height);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
-        frame.add(this); // Thêm GamePanel vào frame
-        frame.setLocationRelativeTo(null); // Center
-        frame.setVisible(true);
+    public GamePanel(GameFrame gameFrame) {
+        this.gameFrame = gameFrame;
+        this.setPreferredSize(new Dimension(width, height));
+        this.setBackground(Color.BLACK);
+        this.setLayout(null);
 
-        setBackground(Color.BLACK); // Set the background color
-        // Initialize PlayManager
-        pm = new PlayManager(this); // Pass the current GamePanel instance to PlayManager
+        // Implement Keylistener
+        this.addKeyListener(new KeyHandler());
+        this.setFocusable(true);
 
-        // PNHU: add KeyHandler
-        addKeyListener(new KeyHandler());
-        setFocusable(true); // để panel nhận focus và nhận sự kiện phím
-        requestFocusInWindow(); // đảm bảo nó có focus ngay khi khởi chạy
+        pm = new PlayManager(this);
+    }
 
-        // PNHU: add soundEffect
-        soundEffect = new Sound();
+    public void hideMenu() {
+        if (gameFrame != null) {
+            gameFrame.showGame();
+        }
+    }
+
+    public void showMenu() {
+        if (gameFrame != null) {
+            gameFrame.showMenu();
+        }
     }
 
     public void launchGame() {
+        // Initialize PlayManager with selected difficulty
+        pm = new PlayManager(this);
         gameThread = new Thread(this); // this (GamePanel) vì GamePlanel implements Runnable
         gameThread.start();
+        gameStarted = true;
+    }
+
+    public void resetGame() {
+        // Stop current game
+        gameThread = null;
+        gameStarted = false;
+
+        // Reset key states
+        KeyHandler.upPressed = false;
+        KeyHandler.downPressed = false;
+        KeyHandler.leftPressed = false;
+        KeyHandler.rightPressed = false;
+        KeyHandler.pausedPressed = false;
+
+        // Clear static blocks
+        if (PlayManager.staticBlocks != null) {
+            PlayManager.staticBlocks.clear();
+        }
+
+        // Reset PlayManager
+        pm = null;
     }
 
     @Override
@@ -66,13 +95,48 @@ public class GamePanel extends JPanel implements Runnable {
         if (KeyHandler.pausedPressed == false && pm.Gameover == false) {
             pm.update(); // cập nhật logic game nếu bấm phím pause thì ko cập nhật
         }
+        if (pm != null && pm.Gameover) {
+            // Add delay before showing game over options
+            Timer timer = new Timer(200, e -> {
+                int choice = JOptionPane.showOptionDialog(
+                        this,
+                        "Game Over!\nScore: " + pm.score + "\nLines: " + pm.line,
+                        "Game Over",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE,
+                        null,
+                        new String[] { "Play Again", "Main Menu" },
+                        "Play Again");
+
+                if (choice == 0) {
+                    // Play again
+                    resetGame();
+                    launchGame();
+                } else {
+                    // Return to menu
+                    showMenu();
+                }
+            });
+            timer.setRepeats(false);
+            timer.start();
+
+            // Prevent multiple dialogs
+            pm.Gameover = false;
+            gameThread = null;
+        }
 
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        pm.draw((Graphics2D) g);
-
-    } /* Vẽ giao diện game */
+        if (pm != null) {
+            pm.draw((Graphics2D) g);
+        } else {
+            // Show loading or instruction screen
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD, 30));
+            g.drawString("Loading...", width / 2 - 80, height / 2);
+        }
+    }
 }

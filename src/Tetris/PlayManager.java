@@ -50,6 +50,11 @@ public class PlayManager extends JPanel {
     int line;
     int score;
 
+    // Difficulty settings
+    private String difficultyName = "Normal";
+    private int baseLevelUpLines = 10; // Lines needed to level up
+    private double speedIncreaseRate = 0.9; // Speed multiplier per level
+
     // Tham chiếu đến GamePanel
     GamePanel gp;
 
@@ -75,6 +80,26 @@ public class PlayManager extends JPanel {
 
         nextMino = pickMino();
         nextMino.setXY(NEXTMINO_X, NEXTMINO_Y);
+
+        // Set difficulty name based on drop interval
+        setDifficultyName();
+    }
+
+    private void setDifficultyName() {
+        if (dropInterval >= 180) {
+            difficultyName = "Easy";
+            speedIncreaseRate = 0.95; // Slower increase
+        } else if (dropInterval >= 120) {
+            difficultyName = "Normal";
+            speedIncreaseRate = 0.9;
+        } else if (dropInterval >= 80) {
+            difficultyName = "Hard";
+            speedIncreaseRate = 0.85; // Faster increase
+        } else {
+            difficultyName = "Expert";
+            speedIncreaseRate = 0.8; // Fastest increase
+            baseLevelUpLines = 8; // Level up faster in expert mode
+        }
     }
 
     public PlayManager() {
@@ -168,7 +193,7 @@ public class PlayManager extends JPanel {
                 remainingBlocks.add(block);
             }
         }
-        GamePanel.soundEffect.play(3, false);
+        // GamePanel.soundEffect.play(3, false);
 
         // Dịch block phía trên xuống
         Collections.sort(rowsToDelete);
@@ -189,18 +214,20 @@ public class PlayManager extends JPanel {
         line += numberOfClearedLines;
         score += numberOfClearedLines * 100;
 
-        if (line % 10 == 0) {
+        // Level up logic adapted to difficulty
+        if (line % baseLevelUpLines == 0) {
             level++;
-            dropInterval = Math.max(1, (int) (dropInterval * 0.9));
+            dropInterval = Math.max(1, (int) (dropInterval * speedIncreaseRate));
         }
     }
 
     public void draw(Graphics2D g2) {
+        // Draw main game area
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(4f));
         g2.drawRect(left_X - 4, top_Y - 4, WIDTH + 8, HEIGHT + 8);
 
-        // Draw next Mino Frame
+        // Draw next Mino frame
         int x = right_X + 100;
         int y = bottom_Y - 200;
         g2.drawRect(x, y, 200, 200);
@@ -208,20 +235,20 @@ public class PlayManager extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.drawString("Next", x + 60, y + 60);
 
-        // Draw the currentMino
+        // Draw current and next mino
         if (currentMino != null) {
             currentMino.draw(g2);
         }
+        if (nextMino != null) {
+            nextMino.draw(g2);
+        }
 
-        // Draw the next Mino
-        nextMino.draw(g2);
-
-        // Draw the static block
+        // Draw static blocks
         for (Block staticBlock : staticBlocks) {
             staticBlock.draw(g2);
         }
 
-        // draw effect
+        // Draw line clear effect
         if (effectCounterOn) {
             effectCounter++;
             g2.setColor(Color.red);
@@ -235,13 +262,15 @@ public class PlayManager extends JPanel {
             }
         }
 
-        // draw pause and game over
-        g2.setColor(Color.yellow);
-        g2.setFont(g2.getFont().deriveFont(50f));
+        // Draw game state messages
         if (Gameover) {
             g2.setColor(Color.red);
             g2.setFont(new Font("Arial", Font.BOLD, 50));
             g2.drawString("GAME OVER", left_X + 50, top_Y + 300);
+
+            g2.setColor(Color.white);
+            g2.setFont(new Font("Arial", Font.PLAIN, 20));
+            g2.drawString("Final Score: " + score, left_X + 100, top_Y + 350);
         }
 
         if (KeyHandler.pausedPressed && !Gameover) {
@@ -249,19 +278,31 @@ public class PlayManager extends JPanel {
             g2.setFont(new Font("Arial", Font.BOLD, 40));
             g2.drawString("PAUSED", left_X + 100, top_Y + 350);
         }
-        int scoreX = right_X + 50;
-        g2.drawRect(scoreX, top_Y, 250, 150);
-        g2.setFont(new Font("Arial", Font.BOLD, 20));
-        g2.drawString("LEVEL: " + level, scoreX + 20, top_Y + 50);
-        g2.drawString("LINES: " + line, scoreX + 20, top_Y + 90);
-        g2.drawString("SCORE: " + score, scoreX + 20, top_Y + 130);
 
-        // draw game title
+        // Draw score panel
+        int scoreX = right_X + 50;
+        g2.setColor(Color.white);
+        g2.drawRect(scoreX, top_Y, 250, 180);
+        g2.setFont(new Font("Arial", Font.BOLD, 20));
+        g2.drawString("DIFFICULTY: " + difficultyName, scoreX + 10, top_Y + 30);
+        g2.drawString("LEVEL: " + level, scoreX + 20, top_Y + 60);
+        g2.drawString("LINES: " + line, scoreX + 20, top_Y + 90);
+        g2.drawString("SCORE: " + score, scoreX + 20, top_Y + 120);
+
+        // Show next level progress
+        int linesUntilNext = baseLevelUpLines - (line % baseLevelUpLines);
+        g2.setFont(new Font("Arial", Font.PLAIN, 14));
+        g2.drawString("Next: " + linesUntilNext + " lines", scoreX + 20, top_Y + 150);
+
+        // Draw game title
         x = 35;
         y = top_Y + 320;
         g2.setColor(Color.white);
         g2.setFont(new Font("Times New Roman", Font.ITALIC, 50));
         g2.drawString("Simple Tetris", x, y);
 
+        // Draw controls hint
+        g2.setFont(new Font("Arial", Font.PLAIN, 14));
+        g2.drawString("ESC - Menu", x, y + 50);
     }
 }

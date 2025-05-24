@@ -35,7 +35,7 @@ public abstract class Mino {
 
     }
 
-    public void updateXY(int direction) { // kiểm tra va chạm, neeusko va chạm thì cập nhận tu tempb sang b
+    public void updateXY(int direction) { // kiểm tra va chạm, nếu ko va chạm thì cập nhận tu tempb sang b
         checkRotationCollision();// kiểm tra va chạm từ tường với block khác
         if (!leftCollision && !rightCollision && !bottomCollision) {
             this.direction = direction;
