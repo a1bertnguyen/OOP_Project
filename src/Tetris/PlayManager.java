@@ -193,7 +193,8 @@ public class PlayManager extends JPanel {
                 remainingBlocks.add(block);
             }
         }
-        // GamePanel.soundEffect.play(3, false);
+        Sound sound = new Sound();
+        sound.play(1, false);
 
         // Dịch block phía trên xuống
         Collections.sort(rowsToDelete);
@@ -208,11 +209,18 @@ public class PlayManager extends JPanel {
         // Cập nhật staticBlocks
         staticBlocks.clear();
         staticBlocks.addAll(remainingBlocks);
-
-        // Tính điểm
+        // Tính điểm với bonus cho nhiều dòng cùng lúc
         int numberOfClearedLines = rowsToDelete.size();
         line += numberOfClearedLines;
-        score += numberOfClearedLines * 100;
+
+        int baseScore = numberOfClearedLines * 100;
+        int bonus = switch (numberOfClearedLines) {
+            case 2 -> 50; // Double bonus
+            case 3 -> 150; // Triple bonus
+            case 4 -> 400; // Tetris bonus
+            default -> 0;
+        };
+        score += baseScore + bonus;
 
         // Level up logic adapted to difficulty
         if (line % baseLevelUpLines == 0) {
