@@ -45,7 +45,7 @@ A classic **Tetris game** built using **Java and OOP** principles. It features *
 - **Developer:**
 - ITITDK23008_ Nguyễn Quang Minh
 - ITITWE23040_ Nguyễn Lê Mai Hương
-- ITCS24065_ Nguyễn Ngọc Phương Như
+- ITCSIU24065_ Nguyễn Ngọc Phương Như
 - ITITDK23023_ Lê Đoàn Minh Ngọc
 
 Enjoy playing! 🎮
